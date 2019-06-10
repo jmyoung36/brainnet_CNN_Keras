@@ -20,7 +20,7 @@ class EdgeToEdge(Layer) :
     def build(self, input_shape):
         
         # do we want to add bias 
-        self.use_bias = False
+        self.use_bias = True
         
         # Create a trainable weight variable for this layer.
         # kernel shape is matrix height or width as they are the same
@@ -37,10 +37,10 @@ class EdgeToEdge(Layer) :
             
             if self.use_bias :
                 
-                #bias_shape = ()
+                bias_shape = (1, 1, 1, self.filters)
                 self.bias = self.add_weight(name='bias',
-                                shape=kernel_shape,
-                                initializer='zeros',
+                                shape=bias_shape,
+                                initializer='ones',
                                 trainable=True)
         
             # store matrix size for convenience
@@ -94,7 +94,7 @@ class EdgeToNode(Layer) :
     def build(self, input_shape):
         
         # do we want to add bias 
-        self.use_bias = False
+        self.use_bias = True
         
         # Create a trainable weight variable for this layer.
         # kernel shape is matrix height or width as they are the same
@@ -112,7 +112,7 @@ class EdgeToNode(Layer) :
                 
                 self.bias = self.add_weight(name='bias',
                                 shape=kernel_shape,
-                                initializer='zeros',
+                                initializer='ones',
                                 trainable=True)
         
             # store matrix size for convenience
@@ -128,11 +128,6 @@ class EdgeToNode(Layer) :
         
         # first, apply convolution across rows
         X_conv_rows = conv2d(X, self.kernel, strides=(1, 1), padding='valid')
-        
-        # add bias if we are using it
-        if self.use_bias :
-            
-            X_conv_rows = X_conv_rows + self.bias
         
         # square results for E2N
         E2N_uncorrected = X_conv_rows * 2
